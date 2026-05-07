@@ -1,0 +1,60 @@
+[{
+  "_id": {
+    "$oid": "69d397ce5b97fada12f4b5f4"
+  },
+  "productId": 1,
+  "name": "Mouse",
+  "price": 50,
+  "stock": 10,
+  "img": "mouse.png"
+},
+{
+  "_id": {
+    "$oid": "69d397f75b97fada12f4b5f6"
+  },
+  "productId": 2,
+  "name": "Laptop",
+  "price": 1200,
+  "stock": 10,
+  "img": "laptop.png"
+},
+{
+  "_id": {
+    "$oid": "69d398245b97fada12f4b5f8"
+  },
+  "productId": 3,
+  "name": "Phone",
+  "price": 800,
+  "stock": 10,
+  "img": "phone.png"
+},
+{
+  "_id": {
+    "$oid": "69d398435b97fada12f4b5fa"
+  },
+  "productId": 4,
+  "name": "Headphones",
+  "price": 150,
+  "stock": 10,
+  "img": "headphones.png"
+},
+{
+  "_id": {
+    "$oid": "69d3985e5b97fada12f4b5fc"
+  },
+  "productId": 5,
+  "name": "Keyboard",
+  "price": 100,
+  "stock": 10,
+  "img": "keyboard.png"
+},
+{
+  "_id": {
+    "$oid": "69d3987c5b97fada12f4b5fe"
+  },
+  "productId": 6,
+  "name": "Monitor",
+  "price": 400,
+  "stock": 10,
+  "img": "monitor.png"
+}]
