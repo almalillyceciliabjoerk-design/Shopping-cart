@@ -13,6 +13,28 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model("Product", productSchema);
 
+// LIVE SEARCH products
+router.get("/search", async (req, res) => {
+  try {
+    const query = req.query.q;
+
+    // If search is empty, return all products
+    if (!query) {
+      const products = await Product.find();
+      return res.json(products);
+    }
+
+    const products = await Product.find({
+      name: { $regex: query, $options: "i" },
+    });
+
+    res.json(products);
+  } catch (err) {
+    console.error("Search failed:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 // GET all products
 router.get("/", async (req, res) => {
   try {

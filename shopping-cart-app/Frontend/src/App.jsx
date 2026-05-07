@@ -5,17 +5,22 @@ function App() {
   const [products, setProducts] = useState([]); // products = stock
   const [cart, setCart] = useState([]);
   const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
 
   const backendUrl = "http://localhost:5000"; // backend root
 
   // Fetch products (stock) from backend
-  const fetchProducts = async () => {
+  const fetchProducts = async (searchQuery = "") => {
     try {
-      const res = await fetch(`${backendUrl}/products`);
+      const res = await fetch(
+        `${backendUrl}/products/search?q=${searchQuery}`
+      );
+
       const data = await res.json();
       setProducts(data);
     } catch (err) {
       console.error("Failed to fetch products:", err);
+      setError("Failed to load products.");
     }
   };
 
@@ -31,9 +36,12 @@ function App() {
   };
 
   useEffect(() => {
-    fetchProducts();
     fetchCart();
   }, []);
+
+  useEffect(() => {
+    fetchProducts(search);
+  }, [search]);
 
   // Add product to cart
   const addToCart = async (product) => {
@@ -163,6 +171,14 @@ function App() {
 
       <section className="products-section">
         <h2>Products</h2>
+
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="search-bar"
+        />
 
         {/* Show error if it exists */}
         {error && <p className="error-message">{error}</p>}
