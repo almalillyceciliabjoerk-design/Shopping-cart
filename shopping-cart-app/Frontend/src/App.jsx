@@ -6,6 +6,8 @@ function App() {
   const [cart, setCart] = useState([]);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const backendUrl = "http://localhost:5000"; // backend root
 
@@ -32,6 +34,20 @@ function App() {
       setCart(data);
     } catch (err) {
       console.error("Failed to fetch cart:", err);
+    }
+  };
+
+  const login = async () => {
+    const res = await fetch("http://localhost:5000/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (data.token) {
+      console.log("Logged in!");
     }
   };
 

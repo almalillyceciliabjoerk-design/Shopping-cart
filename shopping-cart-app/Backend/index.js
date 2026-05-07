@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import cartRouter from "./routes/cart.js";
 import productRouter from "./routes/products.js";
+import authRoutes from "./routes/auth.js";
 
 const app = express();
 const PORT = 5000; 
@@ -10,10 +11,11 @@ const PORT = 5000;
 // middleware
 app.use(cors());
 app.use(express.json());
-app.use("/products", productRouter);
 
 // routes
 app.use("/cart", cartRouter);
+app.use("/auth", authRoutes);
+app.use("/products", productRouter);
 
 app.use("/images", express.static("images"));
 
