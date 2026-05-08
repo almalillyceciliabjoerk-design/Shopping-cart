@@ -38,7 +38,11 @@ function App() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      setCart(data);
+      if (Array.isArray(data)) {
+        setCart(data);
+      } else {
+        setCart([]);
+      }
     } catch (err) {
       console.error("Failed to fetch cart:", err);
     }
@@ -59,8 +63,10 @@ function App() {
   };
 
   useEffect(() => {
+  if (token) {
     fetchCart();
-  }, []);
+  }
+}, [token]);
 
   useEffect(() => {
     fetchProducts(search);
@@ -216,9 +222,11 @@ function App() {
     }
   };
 
-  const total = cart.reduce((acc, item) => {
-    return acc + item.price * item.quantity;
-  }, 0);
+  const total = Array.isArray(cart)
+  ? cart.reduce((acc, item) => {
+      return acc + item.price * item.quantity;
+    }, 0)
+  : 0;
 
   return (
     <div className="container">

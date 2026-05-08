@@ -54,7 +54,7 @@ router.put("/:id", verifyToken,async (req, res) => {
 });
 
 // DELETE item
-router.delete("/:id", verifryToken, async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
   try {
     const item = await CartItem.findByIdAndDelete(req.params.id);
     if (!item) return res.status(404).json({ error: "Item not found" });
