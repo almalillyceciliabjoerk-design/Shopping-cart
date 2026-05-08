@@ -6,10 +6,10 @@ import cartRouter from "./routes/cart.js";
 import productRouter from "./routes/products.js";
 import authRoutes from "./routes/auth.js";
 
+dotenv.config();
+
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-dotenv.config();
 
 // middleware
 app.use(cors());

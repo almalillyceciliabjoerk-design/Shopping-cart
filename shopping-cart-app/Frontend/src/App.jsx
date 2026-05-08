@@ -14,7 +14,6 @@ function App() {
   );
 
   const backendUrl = "http://localhost:5000"; // backend root
-  const token = localStorage.getItem("token");
 
   // Fetch products (stock) from backend
   const fetchProducts = async (searchQuery = "") => {
@@ -33,6 +32,7 @@ function App() {
 
   // Fetch cart items from backend
   const fetchCart = async () => {
+    const token = localStorage.getItem("token");
     try {
       const res = await fetch(`${backendUrl}/cart`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -63,10 +63,10 @@ function App() {
   };
 
   useEffect(() => {
-  if (token) {
-    fetchCart();
-  }
-}, [token]);
+    if (user) {
+      fetchCart();
+    }
+  }, [user]);
 
   useEffect(() => {
     fetchProducts(search);
@@ -74,6 +74,12 @@ function App() {
 
   // Add product to cart
   const addToCart = async (product) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login first");
+      return;
+    }
+
     if (product.stock < 1) {
       alert("Out of stock!");
       return;
@@ -124,6 +130,7 @@ function App() {
 
   // Update cart item quantity
   const updateQuantity = async (cartItem, newQty) => {
+    const token = localStorage.getItem("token");
     if (newQty < 1) return;
 
     try {
@@ -167,6 +174,7 @@ function App() {
 
   // Remove item from cart
   const removeFromCart = async (cartItem) => {
+    const token = localStorage.getItem("token");
     try {
       const product = products.find((p) => p._id === cartItem.productId);
 
@@ -212,7 +220,7 @@ function App() {
         localStorage.setItem("user", JSON.stringify(data.user));
 
         setUser(data.user);
-
+        setCart([]);
         fetchCart();
       } else {
         alert(data.message || "Login failed");
@@ -220,6 +228,40 @@ function App() {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleRegister = async () => {
+    try {
+      const res = await fetch(`${backendUrl}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: email.split("@")[0],
+          email,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Account created! You can now login.");
+      } else {
+        alert(data.message || "Registration failed");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    setUser(null);
+    setCart([]);
   };
 
   const total = Array.isArray(cart)
@@ -230,6 +272,43 @@ function App() {
 
   return (
     <div className="container">
+      {!user ? (
+        <div className="login-box">
+          <h2>Login</h2>
+
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="login-input"
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="login-input"
+          />
+
+          <button onClick={handleLogin} className="login-btn">
+            Login
+          </button>
+
+          <button onClick={handleRegister} className="login-btn">
+            Create Account
+          </button>
+        </div>
+      ) : (
+        <div className="user-bar">
+          <p>Welcome, {user.name}</p>
+
+          <button onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
+      )}
       <h1>Shopping Cart</h1>
 
       <section className="products-section">

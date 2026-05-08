@@ -5,8 +5,6 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-const JWT_SECRET = "your_secret_key"; // later move to .env
-
 // REGISTER
 router.post("/register", async (req, res) => {
   try {

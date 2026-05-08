@@ -21,13 +21,14 @@ router.post("/", verifyToken, async (req, res) => {
     const { productId, name, price, quantity, img } = req.body;
     const userId = req.user.id;
     // Check if item already exists
-    const existing = await CartItem.findOne({ productId, userId });
+    const existing = await CartItem.findOne({ productId, userId: req.user.id, 
+    });
     if (existing) {
       existing.quantity += quantity;
       await existing.save();
       return res.json(existing);
     }
-    const newItem = new CartItem({ userId, productId, name, price, quantity, img });
+    const newItem = new CartItem({ userId: req.user.id, productId, name, price, quantity, img });
     await newItem.save();
 
     console.log("SAVED:", newItem);
@@ -40,7 +41,7 @@ router.post("/", verifyToken, async (req, res) => {
 });
 
 // PUT update quantity
-router.put("/:id", verifyToken,async (req, res) => {
+router.put("/:id", verifyToken, async (req, res) => {
   try {
     const { quantity } = req.body;
     const item = await CartItem.findById(req.params.id);
