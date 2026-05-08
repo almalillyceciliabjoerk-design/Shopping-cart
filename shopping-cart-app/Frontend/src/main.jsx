@@ -4,14 +4,12 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from "./AuthContext";
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
-  </StrictMode>,
-)
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <AuthProvider>
-    <App />
-  </AuthProvider>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  </StrictMode>
 );
+
+
