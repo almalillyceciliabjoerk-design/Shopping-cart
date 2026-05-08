@@ -1,12 +1,13 @@
 import express from "express";
 import CartItem from "../models/CartItem.js";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
 // GET all items
-router.get("/", async (req, res) => {
+router.get("/", verifyToken, async (req, res) => {
   try {
-    const items = await CartItem.find();
+    const items = await CartItem.find({ userId: req.user.id });
     res.json(items);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -14,18 +15,19 @@ router.get("/", async (req, res) => {
 });
 
 // POST add new item
-router.post("/", async (req, res) => {
+router.post("/", verifyToken, async (req, res) => {
   try {
     console.log("BODY RECEIVED:", req.body);
-    const { productId,name, price, quantity, img } = req.body;
+    const { productId, name, price, quantity, img } = req.body;
+    const userId = req.user.id;
     // Check if item already exists
-    const existing = await CartItem.findOne({ productId });
+    const existing = await CartItem.findOne({ productId, userId });
     if (existing) {
       existing.quantity += quantity;
       await existing.save();
       return res.json(existing);
     }
-    const newItem = new CartItem({ productId, name, price, quantity, img });
+    const newItem = new CartItem({ userId, productId, name, price, quantity, img });
     await newItem.save();
 
     console.log("SAVED:", newItem);
@@ -38,7 +40,7 @@ router.post("/", async (req, res) => {
 });
 
 // PUT update quantity
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyToken,async (req, res) => {
   try {
     const { quantity } = req.body;
     const item = await CartItem.findById(req.params.id);
@@ -52,7 +54,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE item
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifryToken, async (req, res) => {
   try {
     const item = await CartItem.findByIdAndDelete(req.params.id);
     if (!item) return res.status(404).json({ error: "Item not found" });

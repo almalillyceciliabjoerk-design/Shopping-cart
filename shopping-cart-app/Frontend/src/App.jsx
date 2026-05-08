@@ -9,7 +9,12 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [user, setUser] = useState(
+  JSON.parse(localStorage.getItem("user"))
+  );
+
   const backendUrl = "http://localhost:5000"; // backend root
+  const token = localStorage.getItem("token");
 
   // Fetch products (stock) from backend
   const fetchProducts = async (searchQuery = "") => {
@@ -29,7 +34,9 @@ function App() {
   // Fetch cart items from backend
   const fetchCart = async () => {
     try {
-      const res = await fetch(`${backendUrl}/cart`);
+      const res = await fetch(`${backendUrl}/cart`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       setCart(data);
     } catch (err) {
@@ -74,14 +81,16 @@ function App() {
         // Increase quantity
         await fetch(`${backendUrl}/cart/${existing._id}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`,
+        },
           body: JSON.stringify({ quantity: existing.quantity + 1 }),
         });
       } else {
         // Add new cart item
         await fetch(`${backendUrl}/cart`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`,
+        },
           body: JSON.stringify({ 
             productId: product._id,
             name: product.name,
@@ -130,14 +139,16 @@ function App() {
       // Update cart
       await fetch(`${backendUrl}/cart/${cartItem._id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, 
+        },
         body: JSON.stringify({ quantity: newQty }),
       });
 
       // Update product stock
       await fetch(`${backendUrl}/products/${product._id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ stock: product.stock - diff }),
       });
 
@@ -168,12 +179,40 @@ function App() {
       // Remove cart item
       await fetch(`${backendUrl}/cart/${cartItem._id}`, {
         method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       fetchProducts();
       fetchCart();
     } catch (err) {
       console.error("Failed to remove from cart:", err);
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      const res = await fetch(`${backendUrl}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        setUser(data.user);
+
+        fetchCart();
+      } else {
+        alert(data.message || "Login failed");
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
