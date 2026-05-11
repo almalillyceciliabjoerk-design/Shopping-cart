@@ -8,6 +8,7 @@ const router = express.Router();
 // REGISTER
 router.post("/register", async (req, res) => {
   try {
+    console.log("Register attempt with body:", req.body);
     const { name, email, password } = req.body;
 
     const existingUser = await User.findOne({ email });
@@ -34,6 +35,7 @@ router.post("/register", async (req, res) => {
 // LOGIN
 router.post("/login", async (req, res) => {
   try {
+    console.log("Login attempt with body:", req.body);
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
@@ -48,7 +50,7 @@ router.post("/login", async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      JWT_SECRET,
+      process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
@@ -61,6 +63,7 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (err) {
+    console.error("Login error:", err);
     res.status(500).json({ error: err.message });
   }
 });

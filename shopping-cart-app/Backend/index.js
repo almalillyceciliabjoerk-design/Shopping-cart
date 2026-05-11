@@ -1,12 +1,14 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+console.log("ENV TEST:", process.env.JWT_SECRET);
+
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
 import cartRouter from "./routes/cart.js";
 import productRouter from "./routes/products.js";
 import authRoutes from "./routes/auth.js";
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
